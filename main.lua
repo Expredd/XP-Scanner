@@ -3673,20 +3673,16 @@ local script = G2L["9"];
 	end
 
 	local function scan(i, startTime, foundList)
-		if not (i:IsA("BindableFunction") or i:IsA("RemoteEvent") or i:IsA("RemoteFunction") or i:IsA("BindableEvent")) then
+		if not (i:IsA("RemoteEvent") or i:IsA("RemoteFunction")) then
 			return
 		end
 
 		local key = HttpService:GenerateGUID(false)
 		local success = pcall(function()
-			if i:IsA("BindableFunction") then
-				i:Invoke("Instance.new('Model', workspace).Name='" .. key .. "'")
-			elseif i:IsA("RemoteEvent") then
+			if i:IsA("RemoteEvent") then
 				i:FireServer("Instance.new('Model', workspace).Name='" .. key .. "'")
 			elseif i:IsA("RemoteFunction") then
 				i:InvokeServer("Instance.new('Model', workspace).Name='" .. key .. "'")
-			elseif i:IsA("BindableEvent") then
-				i:Fire("Instance.new('Model', workspace).Name='" .. key .. "'")
 			end
 		end)
 
@@ -3709,14 +3705,10 @@ local script = G2L["9"];
 					scrollFrame.Visible = true
 				end
 
-				if i:IsA("BindableFunction") then
-					i:Invoke("Instance.new('Hint', workspace).Text='Found Backdoor by XP Scanner | .gg/ZVxpWYWvSM'")
-				elseif i:IsA("RemoteEvent") then
+				if i:IsA("RemoteEvent") then
 					i:FireServer("Instance.new('Hint', workspace).Text='Found Backdoor by XP Scanner | .gg/ZVxpWYWvSM'")
 				elseif i:IsA("RemoteFunction") then
 					i:InvokeServer("Instance.new('Hint', workspace).Text='Found Backdoor by XP Scanner | .gg/ZVxpWYWvSM'")
-				elseif i:IsA("BindableEvent") then
-					i:Fire("Instance.new('Hint', workspace).Text='Found Backdoor by XP Scanner | .gg/ZVxpWYWvSM'")
 				end
 
 				gui.Ex.Visible = true
@@ -3738,7 +3730,7 @@ local script = G2L["9"];
 
 		local descendants = game:GetDescendants()
 		for _, i in ipairs(descendants) do
-			if not (i:IsA("BindableFunction") or i:IsA("RemoteEvent") or i:IsA("RemoteFunction") or i:IsA("BindableEvent")) then
+			if not (i:IsA("RemoteEvent") or i:IsA("RemoteFunction")) then
 				continue
 			end
 			if string.split(i:GetFullName(), '.')[1]=='RobloxReplicatedStorage' then
